@@ -1,5 +1,5 @@
 Attribute VB_Name = "QSort"
-'@Folder "Common"
+'@Folder "Common.QuickSort"
 Option Explicit
 Option Compare Text
 

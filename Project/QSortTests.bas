@@ -1,5 +1,5 @@
 Attribute VB_Name = "QSortTests"
-'@Folder "Common"
+'@Folder "Common.QuickSort"
 '@TestModule
 '@IgnoreModule AssignmentNotUsed, VariableNotUsed, LineLabelNotUsed, UnhandledOnErrorResumeNext, IndexedDefaultMemberAccess
 Option Explicit
