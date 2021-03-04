@@ -3,24 +3,16 @@ Attribute VB_Name = "QSort"
 Option Explicit
 Option Compare Text
 
-
-' Sorts an array using
 '
+' Sorts an array of numbers or strings using quicksort algorithm.
+' It first creates an array of indecies and orders it.
+' Once sorting is complete, the ordered array of indecies
+' is used to order the original array. (This indirect
+' approach is used to reduce the number of swaps of the
+' elements in the original array, which can be strings
+' and, in general, objects.)
+' Ascii strings are sorted in case insensitive fashion (Option Compare Text).
 '
-'
-'
-'
-'
-'
-'
-'
-'
-'
-'
-'
-'
-
-
 Public Sub QuickSortArray(ByRef ValueArray As Variant, _
                  Optional ByVal Start As Long = -1, _
                  Optional ByVal Finish As Long = -1)
@@ -88,24 +80,24 @@ Private Sub QuickSortArrayCore(ByRef ValueArray As Variant, _
                                ByRef ValueIndex As Variant, _
                       Optional ByVal Start As Long = -1, _
                       Optional ByVal Finish As Long = -1)
-    Dim MiddleValue As Variant
-    Dim MiddleIndex As Long
+    Dim PivotValue As Variant
+    Dim PivotIndex As Long
     Dim LeftIndex As Long
     Dim RightIndex As Long
     Dim Buffer As Long
 
     If Start >= Finish Then Exit Sub
     
-    MiddleIndex = Start + CLng(Round(Rnd * (Finish - Start)))
-    MiddleValue = ValueArray(ValueIndex(MiddleIndex))
+    PivotIndex = Start + CLng(Round(Rnd * (Finish - Start)))
+    PivotValue = ValueArray(ValueIndex(PivotIndex))
     LeftIndex = Start
     RightIndex = Finish
                         
     Do While LeftIndex < RightIndex
-        Do While (ValueArray(ValueIndex(RightIndex)) > MiddleValue) And (LeftIndex < RightIndex)
+        Do While (ValueArray(ValueIndex(RightIndex)) > PivotValue) And (LeftIndex < RightIndex)
             RightIndex = RightIndex - 1
         Loop
-        Do While (ValueArray(ValueIndex(LeftIndex)) <= MiddleValue) And (LeftIndex < RightIndex)
+        Do While (ValueArray(ValueIndex(LeftIndex)) < PivotValue) And (LeftIndex < RightIndex)
              LeftIndex = LeftIndex + 1
         Loop
         If LeftIndex < RightIndex Then
@@ -121,18 +113,15 @@ Private Sub QuickSortArrayCore(ByRef ValueArray As Variant, _
     If LeftIndex > RightIndex Then
         RightIndex = RightIndex + 1
         LeftIndex = LeftIndex - 1
-    ElseIf RightIndex = Finish Then
-        If RightIndex >= MiddleIndex Then
-            Buffer = ValueIndex(RightIndex)
-            ValueIndex(RightIndex) = ValueIndex(MiddleIndex)
-            ValueIndex(MiddleIndex) = Buffer
+    ElseIf LeftIndex = RightIndex Then
+        If RightIndex = Finish Then
+            LeftIndex = LeftIndex - 1
+        ElseIf LeftIndex = Start Then
+            RightIndex = RightIndex + 1
+        ElseIf ValueArray(ValueIndex(RightIndex)) >= PivotValue Then
             LeftIndex = LeftIndex - 1
         Else
-            If ValueArray(ValueIndex(RightIndex)) > MiddleValue Then
-                LeftIndex = LeftIndex - 1
-            Else
-                RightIndex = RightIndex + 1
-            End If
+            RightIndex = RightIndex + 1
         End If
     End If
           

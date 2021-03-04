@@ -54,9 +54,7 @@ Arrange:
 Act:
     QuickSortArray Sample
 Assert:
-    Assert.AreEqual 5, Sample(0)
-    Assert.AreEqual 35, Sample(6)
-    Assert.AreEqual 85, Sample(17)
+    Assert.AreEqual "51015202530354045505560657075758085", Join(Sample, "")
 
 CleanExit:
     Exit Sub
@@ -75,11 +73,7 @@ Arrange:
 Act:
     QuickSortArray Sample, 5, 12
 Assert:
-    Assert.AreEqual 45, Sample(0)
-    Assert.AreEqual 10, Sample(4)
-    Assert.AreEqual 5, Sample(5)
-    Assert.AreEqual 85, Sample(12)
-    Assert.AreEqual 80, Sample(13)
+    Assert.AreEqual "45302515105203540506075858055657075", Join(Sample, "")
 
 CleanExit:
     Exit Sub
