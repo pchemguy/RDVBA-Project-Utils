@@ -14,23 +14,24 @@ Option Compare Text
 ' Ascii strings are sorted in case insensitive fashion (Option Compare Text).
 '
 Public Sub QuickSortArray(ByRef ValueArray As Variant, _
-                 Optional ByVal Start As Long = -1, _
-                 Optional ByVal Finish As Long = -1)
+                 Optional ByVal StartParam As Long = -1, _
+                 Optional ByVal FinishParam As Long = -1)
                  
     If IsEmpty(ValueArray) Then Exit Sub
-    
-    If Start = -1 Then Start = LBound(ValueArray, 1)
-    If Finish = -1 Then Finish = UBound(ValueArray, 1)
+    Dim Start As Long
+    Dim Finish As Long
+    Start = IIf(StartParam = -1, LBound(ValueArray, 1), StartParam)
+    Finish = IIf(FinishParam = -1, UBound(ValueArray, 1), FinishParam)
     
     '''' Prepare an array of indecies to be sorted.
     '''' Each element in ValueIndex says that in the position "i" of the sorted array
     '''' should be an element with index ValueIndex(i) from the original unordered array.
     Dim ValueIndex() As Long
     ReDim ValueIndex(Start To Finish)
-    Dim i As Long
-    For i = Start To Finish
-        ValueIndex(i) = i
-    Next i
+    Dim Index As Long
+    For Index = Start To Finish
+        ValueIndex(Index) = Index
+    Next Index
     
     Randomize
 

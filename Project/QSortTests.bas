@@ -54,7 +54,7 @@ Arrange:
 Act:
     QuickSortArray Sample
 Assert:
-    Assert.AreEqual "51015202530354045505560657075758085", Join(Sample, "")
+    Assert.AreEqual "51015202530354045505560657075758085", Join(Sample, vbNullString)
 
 CleanExit:
     Exit Sub
@@ -73,7 +73,7 @@ Arrange:
 Act:
     QuickSortArray Sample, 5, 12
 Assert:
-    Assert.AreEqual "45302515105203540506075858055657075", Join(Sample, "")
+    Assert.AreEqual "45302515105203540506075858055657075", Join(Sample, vbNullString)
 
 CleanExit:
     Exit Sub
@@ -130,7 +130,7 @@ Arrange:
 Act:
     QuickSortArray Sample
 Assert:
-    Assert.AreEqual "afeeebsCsCsgiIbKasOdddQmanZd", Join(Sample, "")
+    Assert.AreEqual "afeeebsCsCsgiIbKasOdddQmanZd", Join(Sample, vbNullString)
 
 CleanExit:
     Exit Sub
@@ -149,7 +149,7 @@ Arrange:
 Act:
     QuickSortArray Sample, 2, 7
 Assert:
-    Assert.AreEqual "KasQmanafeeebsCsCsgIbZdiOddd", Join(Sample, "")
+    Assert.AreEqual "KasQmanafeeebsCsCsgIbZdiOddd", Join(Sample, vbNullString)
 
 CleanExit:
     Exit Sub

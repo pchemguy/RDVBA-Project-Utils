@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@IgnoreModule ProcedureNotUsed
 '@Folder "Common.Project Utils"
 Option Explicit
 
@@ -29,6 +30,7 @@ Private Sub Class_Initialize()
         Case "Microsoft Access", "Microsoft Word"
             Set this.Project = Application.VBE.ActiveVBProject
         Case "Microsoft PowerPoint"
+            '@Ignore IndexedDefaultMemberAccess
             Set this.Project = Application.VBE.VBProjects(1)
     End Select
     
@@ -80,13 +82,15 @@ Public Sub ReferencesSaveToFile()
 End Sub
 
 
-Public Sub ReferencesAddFromFile(Optional ByVal UseGUID = True)
+Public Sub ReferencesAddFromFile(Optional ByVal UseGUID As Boolean = True)
     Dim PathName As String
     PathName = this.ProjectPath & Application.PathSeparator & REFERENCES_FILE
     Dim ReadBuffer As String
     
     Dim FileHandle As Long: FileHandle = FreeFile
     Open PathName For Binary As #FileHandle
+    'Set ReadBuffer to the number of spaces matching the size of the file
+    '@Ignore AssignmentNotUsed
     ReadBuffer = Space$(LOF(FileHandle))
     Get #FileHandle, , ReadBuffer
     Close #FileHandle
@@ -114,3 +118,5 @@ Public Sub ReferencesAddFromFile(Optional ByVal UseGUID = True)
     End If
     On Error GoTo 0
 End Sub
+
+
