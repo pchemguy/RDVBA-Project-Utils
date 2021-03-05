@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '@Folder "Common.Project Utils"
 '@PredeclaredId
-'@IgnoreModule ProcedureNotUsed
+'@IgnoreModule ProcedureNotUsed, IndexedDefaultMemberAccess
 Option Explicit
 
 Private Const PROJECT_FOLDER As String = "Project"
@@ -46,7 +46,7 @@ Private Sub Class_Initialize()
         .Files.CompareMode = TextCompare
         Set .fso = New Scripting.FileSystemObject
         Set .wsh = New IWshRuntimeLibrary.WshShell
-        .ProjectPath = .fso.GetParentFolderName(.Project.Filename) & Application.PathSeparator & PROJECT_FOLDER
+        .ProjectPath = .fso.GetParentFolderName(.Project.FileName) & Application.PathSeparator & PROJECT_FOLDER
         If Dir$(.ProjectPath, vbDirectory) = vbNullString Then MkDir .ProjectPath
         .EnvVarNames = Array("CommonProgramFiles(x86)", "CommonProgramFiles", "ProgramFiles (x86)", "ProgramFiles", "SystemRoot")
     End With
@@ -279,4 +279,83 @@ Attribute ProjectFilesExport.VB_Description = "Exports code modules (entire proj
             this.Project.VBComponents(File).Export this.ProjectPath & Application.PathSeparator & Path & Application.PathSeparator & File & this.Files(File)(0)
         End If
     Next File
+End Sub
+
+
+Private Sub WalkTreeCore(ByVal Folder As Folder)
+    Dim SubFolder As Folder
+    
+    this.Paths(Folder.Path) = vbNullString
+    For Each SubFolder In Folder.SubFolders
+        WalkTreeCore SubFolder
+    Next SubFolder
+End Sub
+
+
+Public Sub WalkTree(Optional ByVal Prefix As String = vbNullString, Optional ByVal SkipRoot As Variant = Empty)
+    this.Paths.RemoveAll
+    
+    Dim RootPrefix As String
+    RootPrefix = IIf(Prefix = vbNullString, this.ProjectPath, this.ProjectPath & Application.PathSeparator & Prefix)
+    
+    Dim Root As Folder
+    Set Root = this.fso.GetFolder(RootPrefix)
+    
+    WalkTreeCore Root
+    Dim SkipRootDir As Boolean
+    SkipRootDir = IIf(IsEmpty(SkipRoot), (Prefix = vbNullString), SkipRoot)
+    If SkipRootDir Then this.Paths.Remove RootPrefix
+End Sub
+
+
+Public Sub CollectFiles(Optional ByVal Prefix As String = vbNullString, Optional ByVal SkipRoot As Variant = Empty)
+    WalkTree Prefix, SkipRoot
+    
+    this.Files.RemoveAll
+    
+    Dim File As IWshRuntimeLibrary.File
+    Dim Path As Variant
+    For Each Path In this.Paths
+        For Each File In this.fso.GetFolder(Path).Files
+            this.Files(this.fso.GetBaseName(File.Name)) = Array(this.fso.GetExtensionName(File.Name), Path)
+        Next File
+    Next Path
+End Sub
+
+
+Public Sub ImportFiles(Optional ByVal Prefix As String = vbNullString, Optional ByVal SkipRoot As Variant = Empty)
+    Dim DestructiveWarning As Boolean
+    Dim Message As String
+    Message = "Warning, you are about to overwrite existing project modules in project " & UCase(this.Project.Name) & "! Continue?"
+    DestructiveWarning = MsgBox(Message, vbYesNo + vbExclamation + vbDefaultButton2)
+    If Not DestructiveWarning Then Exit Sub
+    
+    CollectFiles Prefix, SkipRoot
+    
+    Dim Path As String
+    Dim FileName As Variant
+    Dim Ext As String
+    
+    Dim Module As VBIDE.VBComponent
+    Dim DummyModule As VBIDE.VBComponent
+    On Error Resume Next
+    For Each FileName In this.Files.Keys
+        Set Module = this.Project.VBComponents(FileName)
+        Path = this.Files(FileName)(1)
+        Ext = this.Files(FileName)(0)
+        If Ext = "frx" Then
+            Ext = "frm"
+            this.Files(FileName)(0) = Ext
+        End If
+        If Not Module Is Nothing Then this.Project.VBComponents.Remove Module
+        If Ext <> "doccls" Then
+            this.Project.VBComponents.Import Path & Application.PathSeparator & FileName & "." & Ext
+        Else
+            Set DummyModule = this.Project.VBComponents.Import(Path & Application.PathSeparator & FileName & "." & Ext)
+            Module.CodeModule.DeleteLines 1, Module.CodeModule.CountOfLines
+            Module.CodeModule.InsertLines 1, DummyModule.CodeModule.Lines(1, DummyModule.CodeModule.CountOfLines)
+            this.Project.VBComponents.Remove DummyModule
+        End If
+    Next FileName
+    On Error GoTo 0
 End Sub
