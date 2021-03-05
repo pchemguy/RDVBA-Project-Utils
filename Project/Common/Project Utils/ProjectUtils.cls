@@ -141,10 +141,9 @@ End Sub
 '''' activated references). Alternatively, read activated refernces first and skip addition
 '''' of activated references.
 '@Description "Add references from the tsv/csv file to the Project of the ActiveWorkbook ."
-Public Sub ReferencesAddFromFile(Optional ByVal UseGUID As Boolean = True)
+Public Sub ReferencesAddFromFile(Optional ByVal PathName As String = vbNullString, Optional ByVal UseGUID As Boolean = True)
 Attribute ReferencesAddFromFile.VB_Description = "Add references from the tsv/csv file to the Project of the ActiveWorkbook ."
-    Dim PathName As String
-    PathName = this.ProjectPath & Application.PathSeparator & REFERENCES_FILE
+    If PathName = vbNullString Then PathName = this.ProjectPath & Application.PathSeparator & REFERENCES_FILE
     Dim ReadBuffer As String
     
     Dim FileHandle As Long: FileHandle = FreeFile
@@ -167,6 +166,10 @@ Attribute ReferencesAddFromFile.VB_Description = "Add references from the tsv/cs
     End If
     
     '''' Add all references ignoring errors
+    Debug.Print "Adding references from " & PathName & vbNewLine & _
+                "For refernces that are already activated, a warning" & vbNewLine & _
+                UCase("Name conflicts with existing module, project, or object library") & vbNewLine & _
+                "will be reported. Please ignore it." & vbNewLine
     On Error Resume Next
     If UseGUID Then
         For refj = 0 To UBound(ReferencesArray, 1)
@@ -335,6 +338,7 @@ Public Sub ImportFiles(Optional ByVal Prefix As String = vbNullString, Optional 
     Dim Path As String
     Dim FileName As Variant
     Dim Ext As String
+    Dim PathName As String
     
     Dim Module As VBIDE.VBComponent
     Dim DummyModule As VBIDE.VBComponent
@@ -347,15 +351,24 @@ Public Sub ImportFiles(Optional ByVal Prefix As String = vbNullString, Optional 
             Ext = "frm"
             this.Files(FileName)(0) = Ext
         End If
+        PathName = Path & Application.PathSeparator & FileName & "." & Ext
+        
         If Not Module Is Nothing Then this.Project.VBComponents.Remove Module
-        If Ext <> "doccls" Then
-            this.Project.VBComponents.Import Path & Application.PathSeparator & FileName & "." & Ext
-        Else
-            Set DummyModule = this.Project.VBComponents.Import(Path & Application.PathSeparator & FileName & "." & Ext)
-            Module.CodeModule.DeleteLines 1, Module.CodeModule.CountOfLines
-            Module.CodeModule.InsertLines 1, DummyModule.CodeModule.Lines(1, DummyModule.CodeModule.CountOfLines)
-            this.Project.VBComponents.Remove DummyModule
-        End If
+        Select Case Ext
+            Case "cls", "bas", "frm"
+                this.Project.VBComponents.Import PathName
+            Case "doccls"
+                Set DummyModule = this.Project.VBComponents.Import(PathName)
+                Module.CodeModule.DeleteLines 1, Module.CodeModule.CountOfLines
+                Module.CodeModule.InsertLines 1, DummyModule.CodeModule.Lines(1, DummyModule.CodeModule.CountOfLines)
+                this.Project.VBComponents.Remove DummyModule
+        End Select
     Next FileName
     On Error GoTo 0
+    
+    '''' If "References.xsv" exists in the prefix root, add the references.
+    PathName = this.ProjectPath _
+             & IIf(Prefix <> vbNullString, Application.PathSeparator & Prefix, vbNullString) _
+             & Application.PathSeparator & REFERENCES_FILE
+    If Dir$(PathName) <> vbNullString Then ReferencesAddFromFile PathName
 End Sub

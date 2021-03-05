@@ -58,6 +58,6 @@ Private Sub ImportFiles()
     Dim Project As ProjectUtils
     Set Project = New ProjectUtils
     Dim ImportFolder As String
-    ImportFolder = ""
+    ImportFolder = "Storage\Record"
     Project.ImportFiles ImportFolder
 End Sub
