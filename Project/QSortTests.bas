@@ -52,7 +52,7 @@ Arrange:
     Dim Sample() As Variant
     Sample = Array(45, 30, 25, 15, 10, 5, 40, 20, 35, 50, 75, 85, 60, 80, 55, 65, 70, 75)
 Act:
-    QuickSortArray Sample
+    QSort.QuickSortArray Sample
 Assert:
     Assert.AreEqual "51015202530354045505560657075758085", Join(Sample, vbNullString)
 
@@ -71,7 +71,7 @@ Arrange:
     Dim Sample() As Variant
     Sample = Array(45, 30, 25, 15, 10, 5, 40, 20, 35, 50, 75, 85, 60, 80, 55, 65, 70, 75)
 Act:
-    QuickSortArray Sample, 5, 12
+    QSort.QuickSortArray Sample, 5, 12
 Assert:
     Assert.AreEqual "45302515105203540506075858055657075", Join(Sample, vbNullString)
 
@@ -90,7 +90,7 @@ Arrange:
     Dim Sample() As Variant
     Sample = Array(45)
 Act:
-    QuickSortArray Sample
+    QSort.QuickSortArray Sample
 Assert:
     Assert.AreEqual 45, Sample(0)
 
@@ -109,7 +109,7 @@ Arrange:
     Dim Sample() As Variant
     Sample = Array(45, 15)
 Act:
-    QuickSortArray Sample
+    QSort.QuickSortArray Sample
 Assert:
     Assert.AreEqual 45, Sample(1)
 
@@ -128,7 +128,7 @@ Arrange:
     Dim Sample() As Variant
     Sample = Array("Kas", "Qman", "Cs", "Ib", "Zd", "Csg", "bs", "afeee", "i", "Oddd")
 Act:
-    QuickSortArray Sample
+    QSort.QuickSortArray Sample
 Assert:
     Assert.AreEqual "afeeebsCsCsgiIbKasOdddQmanZd", Join(Sample, vbNullString)
 
@@ -147,7 +147,7 @@ Arrange:
     Dim Sample() As Variant
     Sample = Array("Kas", "Qman", "Cs", "Ib", "Zd", "Csg", "bs", "afeee", "i", "Oddd")
 Act:
-    QuickSortArray Sample, 2, 7
+    QSort.QuickSortArray Sample, 2, 7
 Assert:
     Assert.AreEqual "KasQmanafeeebsCsCsgIbZdiOddd", Join(Sample, vbNullString)
 

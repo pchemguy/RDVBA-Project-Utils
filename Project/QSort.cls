@@ -1,7 +1,19 @@
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+END
 Attribute VB_Name = "QSort"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+Attribute VB_Description = "Provides QuickSort routines."
 '@Folder "Common.QuickSort"
+'@ModuleDescription "Provides QuickSort routines."
+'@PredeclaredId
 Option Explicit
 Option Compare Text
+
 
 '
 ' Sorts an array of numbers or strings using quicksort algorithm.
@@ -133,5 +145,4 @@ Private Sub QuickSortArrayCore(ByRef ValueArray As Variant, _
         QuickSortArrayCore ValueArray, ValueIndex, RightIndex, Finish
     End If
 End Sub
-
 

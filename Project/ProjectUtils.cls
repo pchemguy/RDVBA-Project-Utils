@@ -13,8 +13,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Const PROJECT_FOLDER As String = "Project"
-'Private Const COMMON_FOLDER As String = "Common"
-Private Const REFERENCES_FILE As String = "References.csv"
+Private Const COMMON_FOLDER As String = "Common"
+Private Const REFERENCES_FILE As String = "References.xsv"
 
 Private Type TProjectUtils
     Project As VBIDE.VBProject
@@ -47,7 +47,7 @@ Private Sub Class_Initialize()
         Set .fso = New Scripting.FileSystemObject
         Set .wsh = New IWshRuntimeLibrary.WshShell
         .ProjectPath = .fso.GetParentFolderName(.Project.Filename) & Application.PathSeparator & PROJECT_FOLDER
-        If Not .fso.FolderExists(.ProjectPath) Then .fso.CreateFolder .ProjectPath
+        If Dir$(.ProjectPath, vbDirectory) = vbNullString Then MkDir .ProjectPath
         .EnvVarNames = Array("CommonProgramFiles(x86)", "CommonProgramFiles", "ProgramFiles (x86)", "ProgramFiles", "SystemRoot")
     End With
 End Sub
@@ -61,6 +61,24 @@ Private Sub Class_Terminate()
         Set .fso = Nothing
         Set .wsh = Nothing
     End With
+End Sub
+
+
+'@Description "Creates path, including any non-existing subdirectories."
+Private Sub MkPath(ByVal FullPath As String)
+Attribute MkPath.VB_Description = "Creates path, including any non-existing subdirectories."
+    Dim Folders As Variant
+    Folders = Split(FullPath, Application.PathSeparator)
+    
+    Dim Path As String
+    Path = Folders(0)
+    If Dir$(Path, vbDirectory) = vbNullString Then Err.Raise 76, "ProjectUtils", "Path not found"
+    
+    Dim FolderIndex As Long
+    For FolderIndex = 1 To UBound(Folders, 1)
+        Path = Path & Application.PathSeparator & Folders(FolderIndex)
+        If Dir$(Path, vbDirectory) = vbNullString Then MkDir Path
+    Next FolderIndex
 End Sub
 
 
@@ -165,7 +183,9 @@ Attribute ReferencesAddFromFile.VB_Description = "Add references from the tsv/cs
 End Sub
 
 
+'@Description "Iterates over VBComponents, extracts @Folder annotation and collects File/Folder hierarchy information."
 Public Sub ProjectStructureParse()
+Attribute ProjectStructureParse.VB_Description = "Iterates over VBComponents, extracts @Folder annotation and collects File/Folder hierarchy information."
     this.Paths.RemoveAll
     this.Files.RemoveAll
     
@@ -177,4 +197,86 @@ Public Sub ProjectStructureParse()
     Dim ComponentType As String
     Dim ComponentDeclareLines As String
 
+    For Each Component In this.Project.VBComponents
+        Select Case Component.Type
+            Case vbext_ComponentType.vbext_ct_StdModule
+                ComponentType = "Module"
+                Ext = ".bas"
+            Case vbext_ComponentType.vbext_ct_ClassModule
+                ComponentType = "Class"
+                Ext = ".cls"
+            Case vbext_ComponentType.vbext_ct_MSForm
+                ComponentType = "Form"
+                Ext = ".frm"
+            Case vbext_ComponentType.vbext_ct_Document
+                ComponentType = "Document"
+                Ext = ".doccls"
+        End Select
+        
+        ComponentDeclareLines = Component.CodeModule.Lines(1, Component.CodeModule.CountOfDeclarationLines)
+        AnnotateStart = InStr(1, ComponentDeclareLines, "'@Folder", vbTextCompare)
+        If AnnotateStart > 0 Then
+            AnnotateStart = InStr(AnnotateStart, ComponentDeclareLines, """")
+            AnnotateStop = InStr(AnnotateStart + 1, ComponentDeclareLines, """")
+            Path = Mid$(ComponentDeclareLines, AnnotateStart + 1, AnnotateStop - AnnotateStart - 1)
+        Else
+            Path = COMMON_FOLDER & "." & ComponentType
+            Component.CodeModule.InsertLines 1, "'@Folder """ & Path & """"
+        End If
+        Path = Replace$(Path, ".", Application.PathSeparator)
+        this.Paths(Path) = vbNullString
+        this.Files(Component.Name) = Array(Ext, ComponentType, Path)
+    Next Component
+End Sub
+
+
+'If provided, prefix must use system path separator
+'@Description "Recreates project folder structure in the Project folder (for the entire project or just a path matching provided prefix)."
+Public Sub ProjectStructureExport(Optional ByVal Prefix As String = vbNullString)
+Attribute ProjectStructureExport.VB_Description = "Recreates project folder structure in the Project folder (for the entire project or just a path matching provided prefix)."
+    ProjectStructureParse
+    
+    Dim Path As Variant
+    Dim PrefixMatch As String
+    For Each Path In this.Paths
+        Select Case Len(Path) - Len(Prefix)
+            Case Is > 0
+                PrefixMatch = Prefix & Application.PathSeparator
+            Case 0
+                PrefixMatch = Prefix
+            Case Is < 0
+                PrefixMatch = vbNullString
+        End Select
+            
+        If (Len(PrefixMatch) > 0) And (Left$(Path, Len(PrefixMatch)) = PrefixMatch) Or (Len(Prefix) = 0) Then
+            MkPath this.ProjectPath & Application.PathSeparator & Path
+        End If
+    Next Path
+End Sub
+
+
+'If provided, prefix must use system path separator
+'@Description "Exports code modules (entire project or prefix matching path) to Project folder."
+Public Sub ProjectFilesExport(Optional ByVal Prefix As String = vbNullString)
+Attribute ProjectFilesExport.VB_Description = "Exports code modules (entire project or prefix matching path) to Project folder."
+    ProjectStructureExport Prefix
+    
+    Dim File As Variant
+    Dim Path As String
+    Dim PrefixMatch As String
+    For Each File In this.Files.Keys
+        Path = this.Files(File)(2)
+        Select Case Len(Path) - Len(Prefix)
+            Case Is > 0
+                PrefixMatch = Prefix & Application.PathSeparator
+            Case 0
+                PrefixMatch = Prefix
+            Case Is < 0
+                PrefixMatch = vbNullString
+        End Select
+            
+        If (Len(PrefixMatch) > 0) And (Left$(Path, Len(PrefixMatch)) = PrefixMatch) Or (Len(Prefix) = 0) Then
+            this.Project.VBComponents(File).Export this.ProjectPath & Application.PathSeparator & Path & Application.PathSeparator & File & this.Files(File)(0)
+        End If
+    Next File
 End Sub
