@@ -54,10 +54,10 @@ Private Sub CollectFiles()
     Project.CollectFiles ImportFolder
 End Sub
 
-Private Sub ImportFiles()
+Private Sub ProjectFilesImport()
     Dim Project As ProjectUtils
     Set Project = New ProjectUtils
     Dim ImportFolder As String
     ImportFolder = "" '"Storage\Record"
-    Project.ImportFiles ImportFolder
+    Project.ProjectFilesImport ImportFolder
 End Sub

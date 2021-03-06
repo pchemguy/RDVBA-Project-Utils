@@ -1,3 +1,4 @@
+
 # RDVBA Project Utils
 
 [RDVBA](https://github.com/rubberduck-vba) greatly improves VBA programming experience in number of ways within the stock IDE. Its Code Browser with virtual folders is one such great feature. It also permits exporting/importing all code modules at once. However, the virtual folder structure is not created on the drive.
@@ -6,17 +7,21 @@ While I mostly edit VBA code from within the RDVBA enhanced IDE, I often need to
 
 Code in this project implements such a functionality in VBA with the hope that at some point it such a feature will be integrated into RDVBA. 
 
-## Overview
+## Code description
 
-This project assumes the convention that all code modules are exported to (with folder structure) and can be imported from "Project" folder sitting next to the Excel file (and it may work for Word and Access as well).
+This project assumes the convention that all code modules are exported to (with folder structure) and can be imported from "PROJECT" folder sitting next to the Excel file (and it may work for Word and Access as well).
 
-This project itself contains four modules inside the "Project\Common" folder.
+The "Project\Common\Project Utils" contains the core code, namely, `ProjectUtils` class, implementing functionality and `ProjectUtilsSnippets` with code snippets, running the tasks. Two modules inside the "Project\Common\QuickSort" folder implement basic "QuickSort" algorithm and are not used by the project.
 
-Two modules inside the `QuickSort` folder implement basic "QuickSort" algorithm and are currently not used by the project.
+### Usage
 
-The "Project\Common\Project Utils" contains the actual code, namely, `ProjectUtils` class, implementing functionality and `ProjectUtilsSnippets` with code snippets, running the tasks.
+Importantly, at present, ActiveProject is set as the target for import/export. That means, that the target application file must be the active one (e.g. ActiveWorkbook). Import/export is performed to/from the "PROJECT" folder or its subfolders. Arbitrary locations are not supported.
 
-Importantly, at present, ActiveProject is set as the target for import/export. That means, that the target application file must be the active one (e.g. ActiveWorkbook).
+- Import/Export library references (Tools->References) - run `ProjectUtilsSnippets.ReferencesSaveToFile` and `ProjectUtilsSnippets.ReferencesAddFromFile`.
+- Import/Export project modules/structure - run `ProjectUtilsSnippets.ProjectFilesExport` and `ProjectUtilsSnippets.ProjectFilesImport`.
+
+`ProjectUtils.ProjectFilesExport` takes one optional argument - folder prefix to be exported relative to the "PROJECT" folder. If not provided, the entire project is exported.
+`ProjectUtils.ProjectFilesImport` takes two additional arguments: a folder prefix to be imported relative to the "PROJECT" folder (if not provided, the entire project is imported) and Boolean flag indicating whether to skip importing files from the top imported directory (by default is True to skip, when imported entire  project "PROJECT" folder and False, when a subfolder is indicated as the first argument.
 
 ### References
 
@@ -36,7 +41,7 @@ Importantly, at present, ActiveProject is set as the target for import/export. T
 
 `CollectFiles` gathers file information (`ProjectUtilsSnippets.CollectFiles`).
 
-`ImportFiles` runs actual import, overwriting existing modules, and if "References.xsv" is found in the root, it will be applied as well (`ProjectUtilsSnippets.ImportFiles`).
+`ProjectFilesImport` runs actual import, overwriting existing modules, and if "References.xsv" is found in the root, it will be applied as well (`ProjectUtilsSnippets.ProjectFilesImport`).
 
 ## Limitations
 

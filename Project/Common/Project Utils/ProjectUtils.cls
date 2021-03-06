@@ -295,7 +295,7 @@ Private Sub WalkTreeCore(ByVal Folder As Folder)
 End Sub
 
 
-Public Sub WalkTree(Optional ByVal Prefix As String = vbNullString, Optional ByVal SkipRoot As Variant = Empty)
+Public Sub WalkTree(Optional ByVal Prefix As String = vbNullString, Optional ByVal DoNotImportFilesFromRoot As Variant = Empty)
     this.Paths.RemoveAll
     
     Dim RootPrefix As String
@@ -306,13 +306,13 @@ Public Sub WalkTree(Optional ByVal Prefix As String = vbNullString, Optional ByV
     
     WalkTreeCore Root
     Dim SkipRootDir As Boolean
-    SkipRootDir = IIf(IsEmpty(SkipRoot), (Prefix = vbNullString), SkipRoot)
+    SkipRootDir = IIf(IsEmpty(DoNotImportFilesFromRoot), (Prefix = vbNullString), DoNotImportFilesFromRoot)
     If SkipRootDir Then this.Paths.Remove RootPrefix
 End Sub
 
 
-Public Sub CollectFiles(Optional ByVal Prefix As String = vbNullString, Optional ByVal SkipRoot As Variant = Empty)
-    WalkTree Prefix, SkipRoot
+Public Sub CollectFiles(Optional ByVal Prefix As String = vbNullString, Optional ByVal DoNotImportFilesFromRoot As Variant = Empty)
+    WalkTree Prefix, DoNotImportFilesFromRoot
     
     this.Files.RemoveAll
     
@@ -326,14 +326,14 @@ Public Sub CollectFiles(Optional ByVal Prefix As String = vbNullString, Optional
 End Sub
 
 
-Public Sub ImportFiles(Optional ByVal Prefix As String = vbNullString, Optional ByVal SkipRoot As Variant = Empty)
+Public Sub ProjectFilesImport(Optional ByVal Prefix As String = vbNullString, Optional ByVal DoNotImportFilesFromRoot As Variant = Empty)
     Dim DestructiveWarning As Boolean
     Dim Message As String
     Message = "Warning, you are about to overwrite existing project modules in project " & UCase(this.Project.Name) & "! Continue?"
     DestructiveWarning = MsgBox(Message, vbYesNo + vbExclamation + vbDefaultButton2)
     If Not DestructiveWarning Then Exit Sub
     
-    CollectFiles Prefix, SkipRoot
+    CollectFiles Prefix, DoNotImportFilesFromRoot
     
     Dim Path As String
     Dim FileName As Variant
