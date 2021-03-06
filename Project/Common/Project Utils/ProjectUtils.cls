@@ -143,11 +143,12 @@ End Sub
 '@Description "Add references from the tsv/csv file to the Project of the ActiveWorkbook ."
 Public Sub ReferencesAddFromFile(Optional ByVal PathName As String = vbNullString, Optional ByVal UseGUID As Boolean = True)
 Attribute ReferencesAddFromFile.VB_Description = "Add references from the tsv/csv file to the Project of the ActiveWorkbook ."
-    If PathName = vbNullString Then PathName = this.ProjectPath & Application.PathSeparator & REFERENCES_FILE
+    Dim PathNameL As String
+    PathNameL = IIf(PathName <> vbNullString, PathName, this.ProjectPath & Application.PathSeparator & REFERENCES_FILE)
     Dim ReadBuffer As String
     
     Dim FileHandle As Long: FileHandle = FreeFile
-    Open PathName For Input As #FileHandle
+    Open PathNameL For Input As #FileHandle
     ReadBuffer = Input$(LOF(FileHandle), #FileHandle)
     Close #FileHandle
     
