@@ -111,7 +111,7 @@ Attribute ReferencesSaveToFile.VB_Description = "Save references info for the Pr
         FullPathLen = Len(FullPath)
         EnvVarIndex = 0
         Do While (Len(FullPath) = FullPathLen) And (EnvVarIndex < EnvVarCount)
-            FullPath = Replace(FullPath, Environ(this.EnvVarNames(EnvVarIndex)), "%" & this.EnvVarNames(EnvVarIndex) & "%", 1, 1, vbTextCompare)
+            FullPath = Replace(FullPath, Environ$(this.EnvVarNames(EnvVarIndex)), "%" & this.EnvVarNames(EnvVarIndex) & "%", 1, 1, vbTextCompare)
             EnvVarIndex = EnvVarIndex + 1
         Loop
         If Len(FullPath) = FullPathLen Then
@@ -169,7 +169,7 @@ Attribute ReferencesAddFromFile.VB_Description = "Add references from the tsv/cs
     '''' Add all references ignoring errors
     Debug.Print "Adding references from " & PathName & vbNewLine & _
                 "For refernces that are already activated, a warning" & vbNewLine & _
-                UCase("Name conflicts with existing module, project, or object library") & vbNewLine & _
+                UCase$("Name conflicts with existing module, project, or object library") & vbNewLine & _
                 "will be reported. Please ignore it." & vbNewLine
     On Error Resume Next
     If UseGUID Then
@@ -330,7 +330,7 @@ End Sub
 Public Sub ProjectFilesImport(Optional ByVal Prefix As String = vbNullString, Optional ByVal DoNotImportFilesFromRoot As Variant = Empty)
     Dim DestructiveWarning As Boolean
     Dim Message As String
-    Message = "Warning, you are about to overwrite existing project modules in project " & UCase(this.Project.Name) & "! Continue?"
+    Message = "Warning, you are about to overwrite existing project modules in project " & UCase$(this.Project.Name) & "! Continue?"
     DestructiveWarning = MsgBox(Message, vbYesNo + vbExclamation + vbDefaultButton2)
     If Not DestructiveWarning Then Exit Sub
     
