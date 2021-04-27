@@ -1,1 +1,14 @@
-theme: jekyll-theme-slate
+#theme:
+#remote_theme: benbalter/retlab
+remote_theme: mmistakes/minimal-mistakes
+
+title: "RDVBA Project Utils"
+
+# Plugins
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jekyll-include-cache
+
