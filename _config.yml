@@ -1,10 +1,2 @@
-#theme:
-remote_theme: benbalter/retlab
-#remote_theme: mmistakes/minimal-mistakes
-#minimal_mistakes_skin: "air"
-
+remote_theme: pmarsceill/just-the-docs
 title: "RDVBA Project Utils"
-# description: 
-
-# Plugins
-plugins:
