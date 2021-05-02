@@ -25,21 +25,21 @@ For demo snippets, look for a function in the *ProjectUtilsSnippets* module matc
 
 ### Synch references
 
-*ProjectUtils.ReferencesSaveToFile* saves the details of activated references (Tools->References) to a tab-separated file ("References.xsv" in the "Project" directory), with each record containing Name, GUID, Major, Minor, and FullPath fields.
-*ProjectUtils.ReferencesAddFromFile* parses and activates previously saved references from a file.
-This functionality can be used for the automatic activation of references required by a package during its import.
+*ProjectUtils.ReferencesSaveToFile* saves the details of activated references (Tools->References) to a tab-separated file ("References.xsv" in the "Project" directory), with each record containing Name, GUID, Major, Minor, and FullPath fields.  
+*ProjectUtils.ReferencesAddFromFile* parses and activates previously saved references from a file.  
+This functionality can be used for the automatic activation of references required by a package during its import.  
 
 ### Export project
 
-*ProjectStructureParse* goes through all code modules (VBComponents) in the ActiveProject, reads "'@Folder" annotation for each component, and assembles this information for project export. Modules, which do not have "'@Folder" annotation are placed in one of four subfolders in the "Common" folder selected based on their type.
-*ProjectStructureExport* creates folder structure in the Project folder reproducing that of virtual folders.
-*ProjectFilesExport* exports the code modules.
+*ProjectStructureParse* goes through all code modules (VBComponents) in the ActiveProject, reads "'@Folder" annotation for each component, and assembles this information for project export. Modules, which do not have "'@Folder" annotation are placed in one of four subfolders in the "Common" folder selected based on their type.  
+*ProjectStructureExport* creates folder structure in the Project folder reproducing that of virtual folders.  
+*ProjectFilesExport* exports the code modules.  
 
 ### Import project
 
-*WalkTree*/*WalkTreeCore* collects folder information in the Project folder.
-*CollectFiles* gathers file information.
-*ProjectFilesImport* runs actual import, overwriting existing modules, and if "References.xsv" is found in the root, it will be applied as well.
+*WalkTree*/*WalkTreeCore* collects folder information in the Project folder.  
+*CollectFiles* gathers file information.  
+*ProjectFilesImport* runs actual import, overwriting existing modules, and if "References.xsv" is found in the root, it will be applied as well.  
 
 ### Limitations
 
