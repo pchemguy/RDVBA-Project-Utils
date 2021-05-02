@@ -1,10 +1,3 @@
----
-layout: default
-title: Home
-nav_order: 1
-permalink: /
----
-
 "RDVBA Project Utils" synchs the RDVBA project files, structure, and active references with the project folder using a set of VBA macros.
 
 ### Overview
