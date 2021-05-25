@@ -1,4 +1,4 @@
-"RDVBA Project Utils" synchs the RDVBA project files, structure, and active references with the project folder using a set of VBA macros.
+"RDVBA Project Utils" syncs Rubberduck VBA project files, structure, and active references with the project folder using a set of VBA macros.
 
 ### Overview
 
@@ -23,7 +23,7 @@ RDVBA Project Utils synchronizes all code modules between the ActiveProject (fro
 
 For demo snippets, look for a function in the *ProjectUtilsSnippets* module matching the method name from the *ProjectUtils* class.
 
-### Synch references
+### Sync references
 
 *ProjectUtils.ReferencesSaveToFile* saves the details of activated references (Tools->References) to a tab-separated file ("References.xsv" in the "Project" directory), with each record containing Name, GUID, Major, Minor, and FullPath fields.  
 *ProjectUtils.ReferencesAddFromFile* parses and activates previously saved references from a file.
