@@ -200,6 +200,7 @@ Attribute ProjectStructureParse.VB_Description = "Iterates over VBComponents, ex
     Dim Ext As String
     Dim ComponentType As String
     Dim ComponentDeclareLines As String
+    Dim LineCount As Long
 
     For Each Component In this.Project.VBComponents
         Select Case Component.Type
@@ -217,7 +218,9 @@ Attribute ProjectStructureParse.VB_Description = "Iterates over VBComponents, ex
                 Ext = ".doccls"
         End Select
         
-        ComponentDeclareLines = Component.CodeModule.Lines(1, Component.CodeModule.CountOfDeclarationLines)
+        LineCount = Component.CodeModule.CountOfDeclarationLines
+        LineCount = IIf(LineCount = 0, 1, LineCount)
+        ComponentDeclareLines = Component.CodeModule.Lines(1, LineCount)
         AnnotateStart = InStr(1, ComponentDeclareLines, "'@Folder", vbTextCompare)
         If AnnotateStart > 0 Then
             AnnotateStart = InStr(AnnotateStart, ComponentDeclareLines, """")
