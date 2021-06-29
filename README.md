@@ -16,10 +16,15 @@ RDVBA Project Utils synchronizes all code modules between the ActiveProject (fro
 - Import/Export project modules/structure:
   *ProjectUtils.ProjectFilesExport* and
   *ProjectUtils.ProjectFilesImport*.
+- Remove code modules from project node subtree:
+  *ProjectUtils.ProjectNodeSubtreeDelete* and
+  *ProjectUtils.ProjectNodeSubtreeDelete*.
 
 *ProjectUtils.ProjectFilesExport* takes one optional argument - folder prefix to be exported relative to the "Project" folder. If not provided, the entire project is exported.
 
 *ProjectUtils.ProjectFilesImport* takes two optional arguments: a folder prefix to be imported relative to the "Project" folder and a Boolean flag indicating whether to skip importing files from the top imported directory. The default behavior: import the entire "Project" folder and skip files that are immediate children of the "Project" folder.
+
+*ProjectUtils.ProjectNodeSubtreeDelete* takes one required argument - subtree folder prefix, from which all modules, except for document modules, should be deleted.
 
 For demo snippets, look for a function in the *ProjectUtilsSnippets* module matching the method name from the *ProjectUtils* class.
 
@@ -41,12 +46,17 @@ This functionality can be used for the automatic activation of references requir
 *CollectFiles* gathers file information.  
 *ProjectFilesImport* runs actual import, overwriting existing modules, and if "References.xsv" is found in the root, it will be applied as well.  
 
+### Remove project node subtree
+
+*ProjectNodeSubtreeDelete* removes all modules, except for the document modules, from the project.
+
 ### Limitations
 
 At present, there are no tests in the project (there is a QSort test module, which is not related to the core functionality). I have interactively tested (running the snippets as indicated above) and verified functionality manually in Excel 2002/XP only, so reasonable caution should be exercised, especially with the import process, which overwrites any modules with the same name.
 
-The import procedure assumes that the file names match the name definition inside modules, and it deletes existing modules with conflicting names. Document modules cannot be created/removed via the VBComponents collection, and any such attempt causes an error, which is silently ignored. The import of a document module results in a standard class module being created and automatically renamed. The code from this module replaces the code-behind in the corresponding document module, and the "temporary" class module is then removed.
+The import procedure assumes that the file names match the name definition inside modules, and it deletes existing modules with conflicting names. Document modules cannot be created/removed via the VBComponents collection, and any such attempt causes an error, which is silently ignored. The import of a document module results in a standard class module being created and automatically renamed. The code from this module replaces the code-behind in the corresponding document module, and the "temporary" class module is then removed. The current implementation may result in duplicate modules for modules that cannot be deleted (opened modules?).
 
 One more feature, which is probably necessary but not yet implemented, is the addition/updating of the "'@Folder" annotation in the imported modules.
+
 
 [RDVBA]: https://github.com/rubberduck-vba
